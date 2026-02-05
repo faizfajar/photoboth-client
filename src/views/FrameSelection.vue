@@ -1,102 +1,64 @@
 <template>
-  <div class="h-screen w-full flex flex-col bg-black text-white p-8 overflow-hidden">
-    
-    <header class="flex-shrink-0 pt-8 pb-10 text-center">
-      <h2 class="text-6xl font-black italic tracking-tighter uppercase leading-none">
-        Pilih <span class="text-yellow-400">Bingkai</span>
-      </h2>
-      <p class="text-xl opacity-40 mt-2 tracking-widest uppercase">Sesuaikan gayamu!</p>
-    </header>
+  <div class="h-screen w-full bg-white text-black flex flex-col p-8 overflow-hidden select-none">
+    <h1 class="text-4xl font-black italic uppercase mb-10 tracking-tighter">Select Frame</h1>
 
-    <main class="flex-1 overflow-y-auto pr-2 custom-scrollbar">
-      <div class="grid grid-cols-2 gap-6 pb-10">
-        <div 
-          v-for="frame in frames" 
-          :key="frame.id"
-          @click="selectFrame(frame)"
-          :class="[
-            'relative aspect-[9/16] rounded-[2.5rem] overflow-hidden border-4 transition-all duration-300',
-            selectedId === frame.id 
-              ? 'border-yellow-400 scale-[0.98] shadow-[0_0_50px_rgba(250,204,21,0.3)]' 
-              : 'border-white/10 opacity-70'
-          ]"
-        >
-          <div class="absolute inset-0 bg-zinc-900 -z-10"></div>
-
-          <img 
-            :src="frame.path" 
-            class="w-full h-full object-cover" 
-            draggable="false"
-          />
-
-          <div 
-            v-if="selectedId === frame.id" 
-            class="absolute inset-0 bg-yellow-400/10 flex items-center justify-center"
-          >
-            <div class="bg-yellow-400 text-black p-4 rounded-full shadow-xl">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-          </div>
-        </div>
+    <div class="flex flex-1 gap-10 min-h-0">
+      <div class="w-48 flex flex-col gap-4">
+        <button v-for="cat in ['All', 'Collaboration', 'Season']" :key="cat"
+          @click="activeCategory = cat"
+          :class="['py-4 px-6 rounded-xl font-bold transition-all border-2', 
+                   activeCategory === cat ? 'bg-zinc-900 text-white border-zinc-900' : 'bg-zinc-100 border-transparent text-zinc-400']">
+          {{ cat }}
+        </button>
       </div>
-    </main>
 
-    <footer class="flex-shrink-0 py-8">
-      <button 
-        @click="confirmSelection"
-        :disabled="!selectedId"
-        :class="[
-          'w-full py-8 rounded-[2rem] font-black text-4xl uppercase tracking-tighter transition-all duration-300 active:scale-95',
-          selectedId 
-            ? 'bg-yellow-400 text-black shadow-[0_15px_0_rgb(161,98,7)]' 
-            : 'bg-zinc-800 text-zinc-600 cursor-not-allowed opacity-50'
-        ]"
-      >
-        Mulai Foto
-      </button>
-    </footer>
+      <div class="flex-1 flex flex-col items-center justify-center bg-zinc-50 rounded-[3rem] p-10 relative">
+        <div class="relative h-full aspect-[2/3] shadow-2xl rounded-lg overflow-hidden border-8 border-white bg-white">
+          <img :src="currentFrame.src" class="w-full h-full object-contain" />
+        </div>
+        
+        <button @click="store.nextStep('CAPTURE')" 
+                class="absolute bottom-10 right-10 bg-zinc-900 text-white px-10 py-5 rounded-full font-black uppercase flex items-center gap-3 hover:scale-105 transition active:scale-95 shadow-xl">
+          Take Photo <span class="text-2xl">→</span>
+        </button>
+      </div>
+    </div>
 
+    <div class="h-48 mt-8 flex gap-4 overflow-x-auto pb-4 custom-scrollbar">
+      <div v-for="(frame, idx) in filteredFrames" :key="idx"
+           @click="selectFrame(idx)"
+           :class="['flex-shrink-0 w-32 aspect-[2/3] rounded-lg border-4 overflow-hidden transition-all cursor-pointer',
+                    store.selectedFrameIndex === idx ? 'border-yellow-400 scale-105 shadow-lg' : 'border-zinc-200 opacity-60']">
+        <img :src="frame.src" class="w-full h-full object-cover" />
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useBoothStore } from '../store'
 
 const store = useBoothStore()
-const selectedId = ref(null)
+const activeCategory = ref('All')
 
-// Sesuaikan dengan file yang ada di folder public/frames/ kamu
+// Mockup Data Bingkai
 const frames = [
-  { id: 1, path: '/frames/batik.png' },
-  { id: 2, path: '/frames/cyber.png' },
-  { id: 3, path: '/frames/butterfly.png' },
-  { id: 4, path: '/frames/retro.png' },
-  { id: 5, path: '/frames/frame.png' }, // Contoh tambahan buat ngetes scroll
-  // { id: 6, path: '/frames/frame2.png' },
+  { id: 1, name: 'Floral Classic', category: 'Season', src: '/public/frames/butterfly.png' },
+  { id: 2, name: 'Cyber Neon', category: 'Collaboration', src: '/public/frames/cyber.png' },
+  { id: 3, name: 'Basic White', category: 'All', src: '/public/frames/retro.png' },
 ]
 
-const selectFrame = (frame) => {
-  selectedId.value = frame.id
-  store.selectedFrame = frame.path
-}
+const filteredFrames = computed(() => {
+  if (activeCategory.value === 'All') return frames
+  return frames.filter(f => f.category === activeCategory.value)
+})
 
-const confirmSelection = () => {
-  if (selectedId.value) {
-    store.nextStep('CAPTURE')
-  }
+const currentFrame = computed(() => frames[store.selectedFrameIndex] || frames[0])
+
+const selectFrame = (index) => {
+  store.selectedFrameIndex = index
+  // Simpan juga ke store.selectedFrame untuk digunakan di CameraPreview
+  store.selectedFrame = frames[index].src
 }
 </script>
-
-<style scoped>
-/* Sembunyikan scrollbar tapi tetep bisa di-scroll */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-}
-</style>
