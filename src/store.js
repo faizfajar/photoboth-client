@@ -2,57 +2,69 @@ import { defineStore } from "pinia";
 
 export const useBoothStore = defineStore("booth", {
   state: () => ({
-    currentStep: "START", // START -> FRAME -> CAPTURE -> REVIEW -> DONE
-    deviceToken: localStorage.getItem("device_token") || "",
+    // Status navigasi utama aplikasi
+    currentStep: "START",
+
+    // Asset frame terpilih dalam bentuk path/URL
     selectedFrame: null,
 
-    // UBAH: Photos sekarang menjadi array of objects untuk mendukung interaksi
-    // Kita inisialisasi 4 slot langsung agar tidak error saat diakses index-nya
-    photos: [
-      { src: null, x: 50, y: 50, scale: 1, rotation: 0 },
-      { src: null, x: 50, y: 50, scale: 1, rotation: 0 },
-      { src: null, x: 50, y: 50, scale: 1, rotation: 0 },
-      { src: null, x: 50, y: 50, scale: 1, rotation: 0 },
-    ],
+    // Data layout aktif yang diimpor dari layouts.json
+    selectedLayout: null,
 
-    locationName: "Jakarta, Indonesia",
-    selectedEmoji: null,
-    editingIndex: null, // Index foto yang lagi diedit di PhotoEditor
-    activeIndex: 0, // Trace active index secara global untuk CameraPreview
-    selectedFrameIndex: 0,
+    // Penanda slot mana yang sedang aktif di layar kamera
+    activeIndex: 0,
+
+    // Koleksi foto hasil jepretan dengan koordinat slotnya
+    photos: [],
   }),
 
   actions: {
+    // Navigasi antar view (START, FRAME, LAYOUT, CAPTURE, REVIEW)
     nextStep(step) {
       this.currentStep = step;
     },
 
-    // UBAH: Reset sekarang mengembalikan struktur objek photo ke awal
+    // Inisialisasi struktur foto berdasarkan layout yang dipilih user
+    setLayout(layout) {
+      this.selectedLayout = layout;
+      this.photos = layout.slots.map((slot) => ({
+        src: null,
+        x: slot.x,
+        y: slot.y,
+        w: slot.w,
+        h: slot.h,
+        scale: 1,
+        rotation: 0,
+      }));
+      this.nextStep("CAPTURE");
+    },
+
+    // Menyimpan data foto baru ke dalam slot tertentu
+    // Re-assignment objek digunakan untuk menjamin update UI instan
+    updatePhoto(index, photoData) {
+      if (this.photos[index]) {
+        this.photos[index] = {
+          ...this.photos[index],
+          src: photoData,
+        };
+      }
+    },
+
+    // Mengembalikan seluruh state ke kondisi pabrik untuk sesi baru
     reset() {
       this.currentStep = "START";
       this.selectedFrame = null;
+      this.selectedLayout = null;
       this.activeIndex = 0;
-      this.selectedFrameIndex = 0;
-      this.editingIndex = null;
-      this.selectedEmoji = null;
-
-      // Kembalikan ke 4 slot kosong dengan koordinat default
-      this.photos = [
-        { src: null, x: 50, y: 50, scale: 1, rotation: 0 },
-        { src: null, x: 50, y: 50, scale: 1, rotation: 0 },
-        { src: null, x: 50, y: 50, scale: 1, rotation: 0 },
-        { src: null, x: 50, y: 50, scale: 1, rotation: 0 },
-      ];
+      this.photos = [];
     },
+  },
 
-    // Tambahan helper jika ingin mengupdate foto secara bersih
-    setPhotoData(index, base64) {
-      if (this.photos[index]) {
-        this.photos[index].src = base64;
-        // Opsional: Atur posisi otomatis agar tidak menumpuk sempurna di awal
-        this.photos[index].x = 40 + index * 10;
-        this.photos[index].y = 40 + index * 20;
-      }
+  getters: {
+    // Mengecek kelengkapan jepretan sebelum masuk ke tahap cetak
+    allPhotosCaptured: (state) => {
+      if (state.photos.length === 0) return false;
+      return state.photos.every((p) => p.src !== null);
     },
   },
 });

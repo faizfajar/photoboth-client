@@ -1,64 +1,75 @@
 <template>
-  <div class="h-screen w-full bg-white text-black flex flex-col p-8 overflow-hidden select-none">
-    <h1 class="text-4xl font-black italic uppercase mb-10 tracking-tighter">Select Frame</h1>
+  <div class="h-screen w-full bg-white text-zinc-900 flex flex-col p-12 select-none overflow-hidden font-sans">
+    
+    <header class="mb-12">
+      <h2 class="text-6xl font-black italic uppercase tracking-tighter leading-tight">
+        Pick Your <span class="text-yellow-500">Frame</span>
+      </h2>
+      <p class="text-zinc-400 font-bold uppercase tracking-[0.4em] text-[10px] mt-2">
+        Sentuhan akhir untuk karakter fotomu
+      </p>
+    </header>
 
-    <div class="flex flex-1 gap-10 min-h-0">
-      <div class="w-48 flex flex-col gap-4">
-        <button v-for="cat in ['All', 'Collaboration', 'Season']" :key="cat"
-          @click="activeCategory = cat"
-          :class="['py-4 px-6 rounded-xl font-bold transition-all border-2', 
-                   activeCategory === cat ? 'bg-zinc-900 text-white border-zinc-900' : 'bg-zinc-100 border-transparent text-zinc-400']">
-          {{ cat }}
-        </button>
-      </div>
+    <div class="flex-1 overflow-y-auto no-scrollbar pb-10">
+      <div class="grid grid-cols-4 gap-8 max-w-7xl mx-auto w-full">
+        <div 
+          v-for="frame in frames" 
+          :key="frame.id"
+          @click="selectAndContinue(frame.src)"
+          class="group relative flex flex-col bg-zinc-50 rounded-[3rem] p-6 border-4 border-transparent hover:border-yellow-400 transition-all duration-500 cursor-pointer shadow-sm hover:shadow-2xl overflow-hidden"
+        >
+          <div class="aspect-[2/3] w-full bg-zinc-200 rounded-2xl overflow-hidden mb-6 relative shadow-inner">
+             <img :src="frame.thumbnail || frame.src" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+             <div class="absolute inset-0 bg-yellow-500/0 group-hover:bg-yellow-500/10 transition-colors"></div>
+          </div>
 
-      <div class="flex-1 flex flex-col items-center justify-center bg-zinc-50 rounded-[3rem] p-10 relative">
-        <div class="relative h-full aspect-[2/3] shadow-2xl rounded-lg overflow-hidden border-8 border-white bg-white">
-          <img :src="currentFrame.src" class="w-full h-full object-contain" />
+          <div class="text-center">
+            <h3 class="text-xl font-black uppercase tracking-tighter">{{ frame.name }}</h3>
+          </div>
+          
+          <div v-if="store.selectedFrame === frame.src" class="absolute top-6 right-6 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center shadow-lg">
+            <span class="text-black font-bold text-xs">✓</span>
+          </div>
         </div>
-        
-        <button @click="store.nextStep('CAPTURE')" 
-                class="absolute bottom-10 right-10 bg-zinc-900 text-white px-10 py-5 rounded-full font-black uppercase flex items-center gap-3 hover:scale-105 transition active:scale-95 shadow-xl">
-          Take Photo <span class="text-2xl">→</span>
-        </button>
       </div>
     </div>
 
-    <div class="h-48 mt-8 flex gap-4 overflow-x-auto pb-4 custom-scrollbar">
-      <div v-for="(frame, idx) in filteredFrames" :key="idx"
-           @click="selectFrame(idx)"
-           :class="['flex-shrink-0 w-32 aspect-[2/3] rounded-lg border-4 overflow-hidden transition-all cursor-pointer',
-                    store.selectedFrameIndex === idx ? 'border-yellow-400 scale-105 shadow-lg' : 'border-zinc-200 opacity-60']">
-        <img :src="frame.src" class="w-full h-full object-cover" />
-      </div>
-    </div>
+    <footer class="mt-auto pt-6 border-t border-zinc-100 flex justify-between items-center opacity-40">
+      <span class="text-[10px] font-bold uppercase tracking-widest">Selected: {{ store.selectedFrame ? 'Ready' : 'None' }}</span>
+      <button @click="store.nextStep('START')" class="text-[10px] font-black uppercase text-yellow-600 transition-colors">
+        ← Kembali ke Awal
+      </button>
+    </footer>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
 import { useBoothStore } from '../store'
+// Memuat data frame dari JSON agar logika komponen tetap bersih
+import framesData from '../data/frames.json'
 
 const store = useBoothStore()
-const activeCategory = ref('All')
+const frames = framesData
 
-// Mockup Data Bingkai
-const frames = [
-  { id: 1, name: 'Floral Classic', category: 'Season', src: '/public/frames/butterfly.png' },
-  { id: 2, name: 'Cyber Neon', category: 'Collaboration', src: '/public/frames/cyber.png' },
-  { id: 3, name: 'Basic White', category: 'All', src: '/public/frames/retro.png' },
-]
-
-const filteredFrames = computed(() => {
-  if (activeCategory.value === 'All') return frames
-  return frames.filter(f => f.category === activeCategory.value)
-})
-
-const currentFrame = computed(() => frames[store.selectedFrameIndex] || frames[0])
-
-const selectFrame = (index) => {
-  store.selectedFrameIndex = index
-  // Simpan juga ke store.selectedFrame untuk digunakan di CameraPreview
-  store.selectedFrame = frames[index].src
+// Fungsi untuk menyimpan pilihan dan lanjut ke tahap berikutnya
+const selectAndContinue = (frameSrc) => {
+  store.selectedFrame = frameSrc
+  store.nextStep('LAYOUT')
 }
 </script>
+
+<style scoped>
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Memastikan gambar tetap tajam saat scaling */
+img {
+  image-rendering: -webkit-optimize-contrast;
+  backface-visibility: hidden;
+}
+</style>

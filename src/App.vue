@@ -1,35 +1,38 @@
 <template>
-  <div class="w-screen h-screen max-w-[1080px] mx-auto bg-black relative overflow-hidden">
-    
-    <Transition name="fade" mode="out-in">
-      <div v-if="store.currentStep === 'START'" key="start" @click="store.nextStep('FRAME')" 
-           class="h-full flex flex-col items-center justify-center cursor-pointer bg-zinc-950">
-        <h1 class="text-7xl font-black italic animate-bounce">SNAP & GLOW</h1>
-      </div>
-
-      <FrameSelection v-else-if="store.currentStep === 'FRAME'" key="frame" />
-
-      <CameraPreview v-else-if="store.currentStep === 'CAPTURE'" key="capture" />
-
-      <ReviewScreen v-else-if="store.currentStep === 'REVIEW'" key="review" />
-
-      <PhotoEditor v-else-if="store.currentStep === 'EDIT'" key="edit" />
-    </Transition>
-
-  </div>
+  <component :is="currentView" />
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { useBoothStore } from './store'
-import CameraPreview from './components/CameraPreview.vue'
+import StartScreen from './views/StartScreen.vue'
 import FrameSelection from './views/FrameSelection.vue'
-import ReviewScreen from './views/ReviewScreen.vue' // <-- PASTIKAN INI DI-IMPORT
-import PhotoEditor from './views/PhotoEditor.vue'
+import LayoutSelection from './components/LayoutSelection.vue'
+import CameraPreview from './components/CameraPreview.vue'
+import ReviewScreen from './views/ReviewScreen.vue'
 
 const store = useBoothStore()
+
+const currentView = computed(() => {
+  switch (store.currentStep) {
+    case 'START': return StartScreen
+    case 'FRAME': return FrameSelection
+    case 'LAYOUT': return LayoutSelection
+    case 'CAPTURE': return CameraPreview
+    case 'REVIEW': return ReviewScreen
+    default: return StartScreen
+  }
+})
 </script>
 
 <style>
-.fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
-.fade-enter-from, .fade-leave-to { opacity: 0; }
+/* Pastikan ini ada di file CSS global kamu */
+html, body, #app {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  background-color: black; /* Hindari warna putih yang bikin silau */
+  overflow: hidden;
+}
 </style>

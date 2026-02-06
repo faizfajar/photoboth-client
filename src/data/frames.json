@@ -1,0 +1,62 @@
+[
+  {
+    "id": "minimal-white",
+    "name": "Pure White",
+    "src": "/assets/frames/cyber.png",
+    "thumbnail": "/assets/frames/cyber.png"
+  },
+  {
+    "id": "classic-black",
+    "name": "Midnight",
+    "src": "/assets/frames/black_frame.png",
+    "thumbnail": "/assets/frames/previews/black_thumb.png"
+  },
+  {
+    "id": "retro-vibe",
+    "name": "Retro 90s",
+    "src": "/assets/frames/retro_frame.png",
+    "thumbnail": "/assets/frames/previews/retro_thumb.png"
+  },
+  {
+    "id": "neon-city",
+    "name": "Cyber Neon",
+    "src": "/assets/frames/neon_frame.png",
+    "thumbnail": "/assets/frames/previews/neon_thumb.png"
+  },
+  {
+    "id": "classic-black",
+    "name": "Midnight",
+    "src": "/assets/frames/black_frame.png",
+    "thumbnail": "/assets/frames/previews/black_thumb.png"
+  },
+  {
+    "id": "retro-vibe",
+    "name": "Retro 90s",
+    "src": "/assets/frames/retro_frame.png",
+    "thumbnail": "/assets/frames/previews/retro_thumb.png"
+  },
+  {
+    "id": "classic-black",
+    "name": "Midnight",
+    "src": "/assets/frames/black_frame.png",
+    "thumbnail": "/assets/frames/previews/black_thumb.png"
+  },
+  {
+    "id": "retro-vibe",
+    "name": "Retro 90s",
+    "src": "/assets/frames/retro_frame.png",
+    "thumbnail": "/assets/frames/previews/retro_thumb.png"
+  },
+  {
+    "id": "classic-black",
+    "name": "Midnight",
+    "src": "/assets/frames/black_frame.png",
+    "thumbnail": "/assets/frames/previews/black_thumb.png"
+  },
+  {
+    "id": "retro-vibe",
+    "name": "Retro 90s",
+    "src": "/assets/frames/retro_frame.png",
+    "thumbnail": "/assets/frames/previews/retro_thumb.png"
+  }
+]
