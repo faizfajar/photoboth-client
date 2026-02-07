@@ -50,9 +50,20 @@
         
         <img v-if="activeGhost" :src="activeGhost" class="absolute inset-0 w-full h-full object-contain opacity-30 pointer-events-none z-10 mix-blend-screen" />
 
-        <transition name="fade">
-          <div v-if="countdown > 0" class="absolute inset-0 z-[80] flex items-center justify-center bg-black/30 backdrop-blur-[2px]">
-            <span class="text-[180px] font-black italic text-yellow-400 drop-shadow-2xl">{{ countdown }}</span>
+        <transition name="flash-number">
+          <div v-if="countdown > 0" 
+              :key="countdown"
+              class="absolute inset-0 z-[80] flex flex-col items-center justify-center pointer-events-none">
+            
+            <!-- <div class="mb-4 flex items-center gap-2 animate-pulse">
+              <div class="w-3 h-3 bg-red-600 rounded-full shadow-[0_0_10px_#dc2626]"></div>
+              <span class="text-[12px] font-mono font-black tracking-[0.3em] text-white/50 uppercase"></span>
+            </div> -->
+
+            <span class="text-[250px] font-black italic text-white drop-shadow-[0_0_40px_rgba(255,255,255,0.4)] leading-none animate-blink">
+              {{ countdown }}
+            </span>
+
           </div>
         </transition>
 
@@ -142,6 +153,7 @@
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useBoothStore } from '../store'
 import poseData from '../data/poses.json'
+import { playTick, playShutter } from '../utils/audio'
 
 const store = useBoothStore()
 const videoRef = ref(null)
@@ -197,13 +209,26 @@ const triggerRetakeFromReview = () => {
 const startCountdown = () => {
   if (countdown.value > 0) return
   countdown.value = 3
+  
+  playTick();
+
   const timer = setInterval(() => {
+    if (countdown.value > 1) {
+      playTick();
+    }
+    
     if (countdown.value > 0) countdown.value--
-    if (countdown.value === 0) { clearInterval(timer); doCapture() }
+    
+    if (countdown.value === 0) { 
+      clearInterval(timer)
+      doCapture() 
+    }
   }, 1000)
 }
 
 const doCapture = () => {
+  playShutter();
+
   showFlash.value = true
   const video = videoRef.value
   const canvas = canvasRef.value
@@ -222,7 +247,7 @@ const doCapture = () => {
   if (sourceRatio > targetRatio) {
     drawH = videoH; drawW = videoH * targetRatio; sx = (videoW - drawW) / 2; sy = 0;
   } else {
-    drawW = videoW; drawH = videoH / targetRatio; sx = 0; sy = (videoH - drawH) / 2;
+    drawW = videoW; drawH = videoW / targetRatio; sx = 0; sy = (videoH - drawH) / 2;
   }
 
   ctx.save()
@@ -260,4 +285,51 @@ onUnmounted(() => { if (stream) stream.getTracks().forEach(t => t.stop()) })
 .fade-enter-from, .fade-leave-to { opacity: 0; }
 .pop-enter-active { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 .pop-enter-from { transform: scale(0.9) translateY(20px); opacity: 0; }
+
+/* --- CINEMA COUNTDOWN KEYFRAMES --- */
+
+@keyframes blink-animation {
+  0%, 100% { 
+    opacity: 1; 
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% { 
+    opacity: 0.7; 
+    transform: scale(0.95);
+    filter: brightness(1.5); /* Memberikan efek kilatan saat redup */
+  }
+}
+
+.animate-blink {
+  /* Berkedip 2 kali dalam satu detik (0.5s per loop) */
+  animation: blink-animation 0.5s ease-in-out infinite;
+}
+
+/* Transisi saat angka berganti (3 ke 2, dst) */
+.flash-number-enter-active {
+  transition: all 0.2s ease-out;
+}
+
+.flash-number-enter-from {
+  opacity: 0;
+  transform: scale(1.5); /* Efek angka datang dari arah layar */
+  filter: blur(10px);
+}
+
+.flash-number-leave-active {
+  transition: all 0.2s ease-in;
+}
+
+.flash-number-leave-to {
+  opacity: 0;
+  transform: scale(0.5); /* Angka mengecil saat hilang */
+  filter: blur(5px);
+}
+
+/* Memastikan tidak ada shadow kotak yang tertinggal */
+span {
+  user-select: none;
+  pointer-events: none;
+}
 </style>

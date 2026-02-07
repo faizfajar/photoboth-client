@@ -39,7 +39,7 @@
 
     <footer class="mt-auto pt-6 border-t border-zinc-100 flex justify-between items-center opacity-40">
       <span class="text-[10px] font-bold uppercase tracking-widest italic">Digital & Print Ready</span>
-      <button @click="store.nextStep('FRAME')" class="text-[10px] font-black uppercase hover:text-yellow-600 transition-colors">
+      <button @click="store.nextStep('FRAME')" class="text-[10px] font-black uppercase text-white transition-colors">
         ← Kembali ke Frame
       </button>
     </footer>

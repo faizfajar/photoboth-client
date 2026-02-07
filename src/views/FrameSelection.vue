@@ -36,7 +36,7 @@
 
     <footer class="mt-auto pt-6 border-t border-zinc-100 flex justify-between items-center opacity-40">
       <span class="text-[10px] font-bold uppercase tracking-widest">Selected: {{ store.selectedFrame ? 'Ready' : 'None' }}</span>
-      <button @click="store.nextStep('START')" class="text-[10px] font-black uppercase text-yellow-600 transition-colors">
+      <button @click="store.nextStep('START')" class="text-[10px] font-black uppercase text-white transition-colors">
         ← Kembali ke Awal
       </button>
     </footer>
