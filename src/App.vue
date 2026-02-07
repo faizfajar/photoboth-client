@@ -16,7 +16,6 @@ const store = useBoothStore()
 const currentView = computed(() => {
   switch (store.currentStep) {
     case 'START': return StartScreen
-    case 'FRAME': return FrameSelection
     case 'LAYOUT': return LayoutSelection
     case 'CAPTURE': return CameraPreview
     case 'REVIEW': return ReviewScreen

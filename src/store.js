@@ -2,19 +2,9 @@ import { defineStore } from "pinia";
 
 export const useBoothStore = defineStore("booth", {
   state: () => ({
-    // Status navigasi utama aplikasi
     currentStep: "START",
-
-    // Asset frame terpilih dalam bentuk path/URL
-    selectedFrame: null,
-
-    // Data layout aktif yang diimpor dari layouts.json
     selectedLayout: null,
-
-    // Penanda slot mana yang sedang aktif di layar kamera
     activeIndex: 0,
-
-    // Koleksi foto hasil jepretan dengan koordinat slotnya
     photos: [],
   }),
 
@@ -24,9 +14,9 @@ export const useBoothStore = defineStore("booth", {
       this.currentStep = step;
     },
 
-    // Inisialisasi struktur foto berdasarkan layout yang dipilih user
     setLayout(layout) {
       this.selectedLayout = layout;
+      // Inisialisasi slot foto berdasarkan koordinat yang terkunci di layout ini
       this.photos = layout.slots.map((slot) => ({
         src: null,
         x: slot.x,
@@ -41,19 +31,24 @@ export const useBoothStore = defineStore("booth", {
 
     // Menyimpan data foto baru ke dalam slot tertentu
     // Re-assignment objek digunakan untuk menjamin update UI instan
-    updatePhoto(index, photoData) {
+   updatePhoto(index, photoData, ghostSrc = null) {
       if (this.photos[index]) {
         this.photos[index] = {
           ...this.photos[index],
           src: photoData,
+          usedGhost: ghostSrc, // save referensi pose guide
         };
       }
+    },
+
+    retakePhoto(index) {
+      this.activeIndex = index;
+      this.nextStep('CAPTURE');
     },
 
     // Mengembalikan seluruh state ke kondisi pabrik untuk sesi baru
     reset() {
       this.currentStep = "START";
-      this.selectedFrame = null;
       this.selectedLayout = null;
       this.activeIndex = 0;
       this.photos = [];

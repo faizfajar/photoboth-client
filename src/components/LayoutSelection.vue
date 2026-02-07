@@ -3,10 +3,10 @@
     
     <header class="mb-12">
       <h2 class="text-6xl font-black italic uppercase tracking-tighter">
-        Select <span class="text-yellow-500">Layout</span>
+        Select <span class="text-yellow-500">Template</span>
       </h2>
       <p class="text-zinc-400 font-bold uppercase tracking-[0.4em] text-[10px] mt-2">
-        Konfigurasi otomatis untuk cetak 4R
+        Pilih desain favoritmu untuk memulai sesi
       </p>
     </header>
 
@@ -16,15 +16,10 @@
           v-for="layout in layouts" 
           :key="layout.id"
           @click="store.setLayout(layout)"
-          class="group flex flex-col bg-zinc-50 rounded-[3.5rem] p-10 border-4 border-transparent hover:border-yellow-400 transition-all duration-500 cursor-pointer shadow-sm hover:shadow-2xl"
+          class="group flex flex-col bg-zinc-50 rounded-[3.5rem] p-6 border-4 border-transparent hover:border-yellow-400 transition-all duration-500 cursor-pointer shadow-sm hover:shadow-2xl"
         >
-          <div class="aspect-[2/3] w-full bg-zinc-200 rounded-[2rem] p-5 grid gap-3 mb-8 group-hover:bg-zinc-300"
-               :style="{ gridTemplateColumns: layout.cols, gridTemplateRows: layout.rows }">
-            <div 
-              v-for="n in layout.slots.length" 
-              :key="n" 
-              class="bg-white rounded-xl shadow-sm border border-black/5"
-            ></div>
+          <div class="aspect-[2/3] w-full bg-zinc-200 rounded-[2rem] overflow-hidden mb-8">
+            <img :src="layout.thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
           </div>
 
           <div class="text-center">
@@ -38,9 +33,9 @@
     </div>
 
     <footer class="mt-auto pt-6 border-t border-zinc-100 flex justify-between items-center opacity-40">
-      <span class="text-[10px] font-bold uppercase tracking-widest italic">Digital & Print Ready</span>
-      <button @click="store.nextStep('FRAME')" class="text-[10px] font-black uppercase text-white transition-colors">
-        ← Kembali ke Frame
+      <span class="text-[10px] font-bold uppercase tracking-widest italic">4R Print Ready System</span>
+      <button @click="store.nextStep('START')" class="text-[10px] font-black uppercase text-zinc-400 transition-colors">
+        ← Kembali ke Awal
       </button>
     </footer>
   </div>
@@ -48,11 +43,9 @@
 
 <script setup>
 import { useBoothStore } from '../store'
-// Import data layout dari file JSON terpisah
 import layoutsData from '../data/layouts.json'
 
 const store = useBoothStore()
-// Inisialisasi list layout dari data yang di-import
 const layouts = layoutsData
 </script>
 

@@ -2,12 +2,12 @@
   {
     "id": "wedding-floral-strip",
     "name": "Wedding Floral (3 Poses)",
-    "thumbnail": "/assets/thumbnails/wedding-3p.jpg",
-    "frameSrc": "/assets/frames/final_frames1.png",
+    "thumbnail": "/assets/frames/birthday.png",
+    "frameSrc": "/assets/frames/birthday.png",
     "slots": [
-      { "x": 100, "y": 100, "w": 1000, "h": 450 },
-      { "x": 100, "y": 600, "w": 1000, "h": 450 },
-      { "x": 100, "y": 1100, "w": 1000, "h": 450 }
+      {"x":186,"y":231,"w":822,"h":393},
+      {"x":186,"y":648,"w":819,"h":399},
+      {"x":186,"y":1068,"w":822,"h":246}
     ]
   },
   {

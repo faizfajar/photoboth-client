@@ -1,6 +1,6 @@
 <template>
   <div 
-    @click="store.nextStep('FRAME')" 
+    @click="store.nextStep('LAYOUT')" 
     class="relative h-screen w-full bg-zinc-950 flex flex-col items-center justify-center overflow-hidden cursor-pointer select-none"
   >
     
@@ -65,7 +65,9 @@ const store = useBoothStore()
 
 /* Efek outline teks tanpa warna isi */
 .text-stroke-white {
-  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.4);
+  -webkit-text-stroke: 1.5px rgba(253, 253, 253, 0.4);
+  /* -webkit-text-stroke-width: 3px;
+  -webkit-text-stroke-color: black; */
   color: transparent;
 }
 </style>
