@@ -42,7 +42,7 @@
     </aside>
 
     <main class="flex-1 relative h-full flex items-center justify-center p-12 overflow-hidden transition-all duration-500"
-          :class="(selectedPoseDetail || showPoseModal || reviewingPhotoIndex !== null) ? 'scale-95 blur-sm opacity-50' : 'scale-100'">
+      :class="(selectedPoseDetail || showPoseModal || reviewingPhotoIndex !== null) ? 'scale-95 blur-sm opacity-80' : 'scale-100'">
       
       <div class="absolute top-12 left-12 right-12 flex justify-between items-start opacity-20 pointer-events-none font-mono text-[10px]">
         <div>REC: 4K RES<br>ISO: 100 | WB: AUTO</div>
@@ -50,8 +50,8 @@
       </div>
 
       <div v-if="currentSlot"
-           class="relative shadow-2xl bg-black overflow-hidden transition-all duration-700 max-h-[75vh] morph-transition"
-           :style="{ height: '100%', aspectRatio: `${currentSlot.w} / ${currentSlot.h}` }">
+          class="relative shadow-2xl bg-black overflow-hidden transition-all duration-700 max-h-[75vh] morph-transition"
+          :style="{ height: '100%', aspectRatio: `${currentSlot.w} / ${currentSlot.h}` }">
         
         <div class="absolute inset-0 pointer-events-none z-30 border-[1px] border-white/5 m-6">
           <div class="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-yellow-400/50"></div>
@@ -60,7 +60,10 @@
           <div class="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-yellow-400/50"></div>
         </div>
 
-        <video ref="videoRef" autoplay muted playsinline class="absolute inset-0 w-full h-full object-cover scale-x-[-1] z-0"></video>
+        <video ref="videoRef" autoplay muted playsinline 
+              class="absolute inset-0 w-full h-full object-cover scale-x-[-1] z-0"
+              :class="[store.selectedFilter]">
+        </video>
         
         <img v-if="activeGhost" :src="activeGhost" class="absolute inset-0 w-full h-full object-contain opacity-30 pointer-events-none z-10 mix-blend-screen" />
 
@@ -74,10 +77,39 @@
 
         <div v-if="showFlash" class="absolute inset-0 bg-white z-[100]"></div>
       </div>
+
+      <div v-if="countdown === 0" class="absolute bottom-10 left-1/2 -translate-x-1/2 z-[110] flex flex-col items-center gap-4 w-full max-w-md px-4">
+    
+        <transition name="ft-label-fade">
+          <span :key="store.selectedFilter" 
+                class="px-4 py-1 bg-yellow-400 text-black text-[9px] font-black uppercase tracking-[0.2em] rounded-full shadow-lg border border-yellow-500 shrink-0">
+            {{ filters.find(f => f.class === store.selectedFilter)?.name || "Off" }}
+          </span>
+        </transition>
+
+        <div class="ft-carousel-wrapper ft-no-scrollbar shadow-2xl w-full flex flex-nowrap" ref="scrollContainer">
+          
+          <button v-for="filter in filters" :key="filter.id"
+                  @click="store.selectedFilter = filter.class"
+                  class="ft-item-btn group flex-shrink-0"
+                  :class="store.selectedFilter === filter.class ? 'scale-110' : 'opacity-40 hover:opacity-100'">
+            
+            <div class="w-14 h-14 rounded-full border-2 overflow-hidden bg-zinc-900 transition-all duration-500"
+                :class="store.selectedFilter === filter.class ? 'border-yellow-400 shadow-[0_0_20px_rgba(250,204,21,0.5)]' : 'border-white/10'">
+              
+              <div :class="filter.class" class="w-full h-full bg-gradient-to-tr from-zinc-700 to-zinc-500 flex items-center justify-center relative">
+                <div class="absolute inset-0 bg-black/10"></div>
+                <span class="relative text-[7px] font-black text-white uppercase mix-blend-difference opacity-80">{{ filter.name }}</span>
+              </div>
+            </div>
+          </button>
+
+        </div>
+      </div>
     </main>
 
     <aside class="w-40 h-full bg-black/20 border-l border-white/5 flex flex-col items-center py-10 gap-8 z-50">
-      
+
       <div class="flex-1 flex flex-col gap-4 overflow-y-auto no-scrollbar px-6">
         <div v-for="pose in poseLibrary.slice(0, 5)" :key="pose.id" 
              @click="openPoseDetail(pose)"
@@ -188,6 +220,7 @@
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useBoothStore } from '../store'
 import poseData from '../data/poses.json'
+import filters from '../data/filters.json'
 import { playTick, playShutter } from '../utils/audio'
 
 const store = useBoothStore()
@@ -205,6 +238,9 @@ const justCapturedIndex = ref(null)
 const compareMode = ref(false);
 let stream = null
 
+// filter scroll container
+const scrollContainer = ref(null);
+
 const currentSlot = computed(() => store.photos[store.activeIndex] || null)
 
 // --- HANDLERS ---
@@ -221,6 +257,43 @@ const handleRetakeAction = () => {
   store.activeIndex = reviewingPhotoIndex.value
   reviewingPhotoIndex.value = null
 }
+
+const handleDragScroll = () => {
+  const el = scrollContainer.value;
+  if (!el) return;
+
+  let isDown = false;
+  let startX;
+  let scrollLeft;
+
+  const onMouseDown = (e) => {
+      isDown = true;
+      el.classList.add('active');
+      startX = e.pageX - el.offsetLeft;
+      scrollLeft = el.scrollLeft;
+  };
+
+  const onMouseLeave = () => {
+      isDown = false;
+  };
+
+  const onMouseUp = () => {
+      isDown = false;
+  };
+
+  const onMouseMove = (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - el.offsetLeft;
+      const walk = (x - startX) * 2; // Angka 2 adalah kecepatan scroll
+      el.scrollLeft = scrollLeft - walk;
+  };
+
+  el.addEventListener('mousedown', onMouseDown);
+  el.addEventListener('mouseleave', onMouseLeave);
+  el.addEventListener('mouseup', onMouseUp);
+  el.addEventListener('mousemove', onMouseMove);
+};
 
 const openPoseDetail = (pose) => { selectedPoseDetail.value = pose }
 const closeDetailAndShowAll = () => { selectedPoseDetail.value = null; showPoseModal.value = true }
@@ -255,6 +328,8 @@ const doCapture = () => {
   canvas.height = currentSlot.value.h * 2;
   const ctx = canvas.getContext('2d');
 
+  ctx.filter = getComputedStyle(videoRef.value).filter;
+
   ctx.save();
   ctx.translate(canvas.width, 0);
   ctx.scale(-1, 1);
@@ -281,6 +356,7 @@ const closeReview = () => {
 
 onMounted(async () => {
   await nextTick()
+  handleDragScroll()
   try {
     stream = await navigator.mediaDevices.getUserMedia({ video: { width: 1920, height: 1080 } })
     if (videoRef.value) videoRef.value.srcObject = stream

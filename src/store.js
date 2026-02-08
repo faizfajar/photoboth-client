@@ -5,6 +5,7 @@ export const useBoothStore = defineStore("booth", {
     currentStep: "START",
     selectedLayout: null,
     activeIndex: 0,
+    selectedFilter: 'filter-none',
     photos: [],
   }),
 
