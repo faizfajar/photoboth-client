@@ -6,6 +6,7 @@ export const useBoothStore = defineStore("booth", {
     selectedLayout: null,
     activeIndex: 0,
     selectedFilter: 'filter-none',
+    lastSavedPath: '',
     photos: [],
   }),
 
@@ -13,6 +14,10 @@ export const useBoothStore = defineStore("booth", {
     // Navigasi antar view (START, FRAME, LAYOUT, CAPTURE, REVIEW)
     nextStep(step) {
       this.currentStep = step;
+    },
+
+    setLastSaved(path) {
+      this.lastSavedPath = path;
     },
 
     setLayout(layout) {
