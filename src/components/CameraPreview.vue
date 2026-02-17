@@ -35,7 +35,7 @@
         </div>
       </div>
       
-      <button v-if="store.allPhotosCaptured" @click="store.nextStep('REVIEW')" 
+      <button v-if="store.allPhotosCaptured" @click="finalizeSession" 
               class="mt-auto py-5 bg-yellow-400 text-black rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl hover:scale-105 transition-all">
         Finish Session →
       </button>
@@ -212,7 +212,21 @@
       </div>
     </transition>
 
+    <transition name="fade">
+      <div v-if="isProcessing" class="fixed inset-0 z-[300] bg-black/90 backdrop-blur-2xl flex flex-col items-center justify-center">
+        <div class="relative w-24 h-24 mb-8">
+          <div class="absolute inset-0 border-4 border-white/10 rounded-full"></div>
+          <div class="absolute inset-0 border-4 border-yellow-400 rounded-full border-t-transparent animate-spin"></div>
+        </div>
+        <h2 class="text-2xl font-black italic uppercase tracking-tighter animate-pulse">
+          Processing <span class="text-yellow-400">High Quality</span> Image
+        </h2>
+        <p class="text-[10px] uppercase tracking-[0.4em] opacity-40 mt-4">Optimizing for print, please wait...</p>
+      </div>
+    </transition>
+
     <canvas ref="canvasRef" class="hidden"></canvas>
+    <canvas ref="finalMergeCanvas" class="hidden"></canvas>
   </div>
 </template>
 
@@ -226,6 +240,8 @@ import { playTick, playShutter } from '../utils/audio'
 const store = useBoothStore()
 const videoRef = ref(null)
 const canvasRef = ref(null)
+const finalMergeCanvas = ref(null)
+const isProcessing = ref(false);
 
 const countdown = ref(0)
 const showFlash = ref(false)
@@ -339,7 +355,9 @@ const doCapture = () => {
   const capturedIndex = store.activeIndex;
   justCapturedIndex.value = capturedIndex;
 
-  store.updatePhoto(capturedIndex, canvas.toDataURL('image/jpeg', 0.95), activeGhost.value);
+  const imageData = canvas.toDataURL('image/jpeg', 0.90);
+
+  store.updatePhoto(store.activeIndex, imageData, activeGhost.value);
 
   setTimeout(() => {
     showFlash.value = false;
@@ -354,6 +372,139 @@ const closeReview = () => {
   compareMode.value = false;
 };
 
+const saveToHistory = async (base64Image) => {
+  try {
+    const response = await fetch('https://7zxvbfr0-8080.asse.devtunnels.ms/api/v1/save-history', {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'X-Tunnel-Skip-Anti-Phishing-Scan': 'true' 
+      },
+      body: JSON.stringify({ image: base64Image })
+    });
+
+    const data = await response.json();
+    
+    if (data.status === 'success') {
+      store.setLastSaved(data.path);
+    }
+  } catch (error) {
+    console.error("[API] Save failed:", error);
+  }
+};
+
+/**
+ * Initializes the built-in webcam with standard high-definition constraints.
+ * Implements a fallback mechanism to ensure stream stability across different hardware.
+ */
+const initCamera = async () => {
+  try {
+    const constraints = {
+      video: {
+        width: { ideal: 1920 },
+        height: { ideal: 1080 },
+        facingMode: "user"
+      }
+    };
+
+    /** Cleanup existing stream tracks before re-initializing to prevent NotReadableError */
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+    }
+
+    try {
+      stream = await navigator.mediaDevices.getUserMedia(constraints);
+    } catch (resolutionError) {
+      /** Fallback to default video constraints if 1080p is not supported by the hardware */
+      stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    }
+    
+    if (videoRef.value) {
+      videoRef.value.srcObject = stream;
+    }
+  } catch (error) {
+    console.error("[Camera] Failed to acquire video stream:", error.name);
+  }
+};
+
+/**
+ * Orchestrates the final image composition and persistence workflow.
+ * Merges high-resolution photo data with layout overlays into a single printable asset.
+ */
+const finalizeSession = async () => {
+  isProcessing.value = true;
+
+  /** Brief delay to ensure the UI thread renders the loading overlay */
+  await new Promise(resolve => setTimeout(resolve, 200));
+
+  try {
+    const canvas = finalMergeCanvas.value;
+    const ctx = canvas.getContext('2d', { alpha: false });
+    const layout = store.selectedLayout;
+
+    /** Map canvas scale to industry-standard 300 DPI print resolutions */
+    const resolutionMap = {
+      '4R': { w: 1200, h: 1800 },
+      'STRIP': { w: 600, h: 1800 },
+      'SQUARE': { w: 1200, h: 1200 }
+    };
+
+    const dimensions = resolutionMap[layout?.type] || resolutionMap['4R'];
+    canvas.width = dimensions.w;
+    canvas.height = dimensions.h;
+
+    /** Apply high-quality interpolation for downscaling captured assets */
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+
+    /** Render the base background layer */
+    ctx.fillStyle = layout?.bgColor || '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    /** Parallel execution of photo rendering onto the composite canvas */
+    const photoRenders = store.photos.map((photo, index) => {
+      return new Promise((resolve) => {
+        if (!photo.src) return resolve();
+        const img = new Image();
+        img.onload = () => {
+          const slot = layout?.slots?.[index];
+          if (slot) ctx.drawImage(img, slot.x, slot.y, slot.w, slot.h);
+          resolve();
+        };
+        img.onerror = () => resolve(); // Prevent process stall on image load failure
+        img.src = photo.src;
+      });
+    });
+
+    await Promise.all(photoRenders);
+
+    /** Overlay the brand frame/template onto the final composition */
+    if (layout?.frameSrc) {
+      await new Promise((resolve) => {
+        const frameImg = new Image();
+        frameImg.onload = () => {
+          ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
+          resolve();
+        };
+        frameImg.onerror = () => resolve();
+        frameImg.src = layout.frameSrc;
+      });
+    }
+
+    /** Convert canvas to optimized JPEG and initiate backend persistence */
+    const finalComposite = canvas.toDataURL('image/jpeg', 0.85);
+    await saveToHistory(finalComposite);
+
+    /** Progress application state to the review and print phase */
+    store.nextStep('REVIEW');
+
+  } catch (error) {
+    console.error("[Finalize] Critical failure during image synthesis:", error);
+  } finally {
+    isProcessing.value = false;
+  }
+};
+
 onMounted(async () => {
   await nextTick()
   handleDragScroll()
@@ -361,6 +512,8 @@ onMounted(async () => {
     stream = await navigator.mediaDevices.getUserMedia({ video: { width: 1920, height: 1080 } })
     if (videoRef.value) videoRef.value.srcObject = stream
   } catch (e) { console.error(e) }
+  
+  await initCamera();
 })
 
 onUnmounted(() => { if (stream) stream.getTracks().forEach(t => t.stop()) })

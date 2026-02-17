@@ -51,20 +51,58 @@
             ← Back to Camera
           </button>
         </div>
+
+        <div class="review-screen flex items-center justify-center">
+          <div v-if="store.lastSavedPath" class="qr-container">
+            <qrcode-vue 
+              :value="completeUrl" 
+              :size="180" 
+              level="H" 
+              render-as="svg"
+            />
+            <p class="mt-2 font-bold text-center">SCAN TO DOWNLOAD</p>
+          </div>
+        </div>
       </div>
+
+     
     </div>
+
+    <transition name="fade">
+      <div v-if="isProcessing" class="fixed inset-0 z-[300] bg-black/90 backdrop-blur-2xl flex flex-col items-center justify-center">
+        <div class="relative w-24 h-24 mb-8">
+          <div class="absolute inset-0 border-4 border-white/10 rounded-full"></div>
+          <div class="absolute inset-0 border-4 border-yellow-400 rounded-full border-t-transparent animate-spin"></div>
+        </div>
+        <h2 class="text-2xl font-black italic uppercase tracking-tighter animate-pulse">
+          Processing <span class="text-yellow-400">High Quality</span> Image
+        </h2>
+        <p class="text-[10px] uppercase tracking-[0.4em] opacity-40 mt-4">Optimizing for print, please wait...</p>
+      </div>
+    </transition>
 
     <canvas ref="outputCanvas" class="hidden" width="1200" height="1800"></canvas>
   </div>
 </template>
 
 <script setup>
+import { computed } from 'vue';
 import { ref } from 'vue'
 import { useBoothStore } from '../store'
+import QrcodeVue from 'qrcode.vue';
 
 const store = useBoothStore()
 const outputCanvas = ref(null)
 const isProcessing = ref(false)
+
+const tunnelBase = 'https://7zxvbfr0-8080.asse.devtunnels.ms';
+
+/** * Menggabungkan Base URL Tunnel dengan Path dari Database.
+ * Inilah yang akan di-scan oleh HP user.
+ */
+const completeUrl = computed(() => {
+  return store.lastSavedPath ? `${tunnelBase}${store.lastSavedPath}` : '';
+});
 
 /**
  * Logika Canvas Flattening
@@ -75,11 +113,11 @@ const generateFinalImage = async () => {
   const canvas = outputCanvas.value
   const ctx = canvas.getContext('2d')
 
-  // 1. Bersihkan Canvas
+  // Bersihkan Canvas
   ctx.fillStyle = "#ffffff"
   ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-  // 2. Gambar Foto User satu per satu berdasarkan koordinat
+  // Gambar Foto User satu per satu berdasarkan koordinat
   for (const photo of store.photos) {
     if (photo.src) {
       const img = await loadImage(photo.src)
@@ -87,13 +125,13 @@ const generateFinalImage = async () => {
     }
   }
 
-  // 3. Gambar Frame PNG di atasnya
+  // Gambar Frame PNG di atasnya
   if (store.selectedLayout?.frameSrc) {
     const frame = await loadImage(store.selectedLayout.frameSrc)
     ctx.drawImage(frame, 0, 0, 1200, 1800)
   }
 
-  // 4. Export Hasil Akhir
+  // Export Hasil Akhir
   const finalResult = canvas.toDataURL('image/jpeg', 0.95)
   
   // Simulasi selesai proses
