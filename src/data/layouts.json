@@ -13,8 +13,8 @@
   {
     "id": "blue-jeans",
     "name": "Blue Jeans",
-    "thumbnail": "/public/assets/thumbnails/blue-jeans.jpg",
-    "frameSrc": "/public/assets/frames/blue-jeans.png",
+    "thumbnail": "/assets/thumbnails/blue-jeans.jpg",
+    "frameSrc": "/assets/frames/blue-jeans.png",
     "slots": [
       {"x": 42, "y": 354, "w": 513, "h": 360},
       {"x": 42, "y": 780, "w": 513, "h": 360},
@@ -27,8 +27,8 @@
   {
     "id": "weeding-1",
     "name": "Weeding Theme 1",
-    "thumbnail": "/public/assets/thumbnails/weeding_1.jpg",
-    "frameSrc": "/public/assets/frames/weeding_1.png",
+    "thumbnail": "/assets/thumbnails/weeding_1.jpg",
+    "frameSrc": "/assets/frames/weeding_1.png",
     "slots": [
       {"x": 147, "y": 99, "w": 927, "h": 543},
       {"x": 144, "y": 657, "w": 945, "h": 543}
