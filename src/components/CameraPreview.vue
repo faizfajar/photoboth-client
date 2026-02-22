@@ -374,7 +374,7 @@ const closeReview = () => {
 
 const saveToHistory = async (base64Image) => {
   try {
-    const response = await fetch('https://7zxvbfr0-8080.asse.devtunnels.ms/api/v1/save-history', {
+    const response = await fetch('/api/v1/save-history', {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',

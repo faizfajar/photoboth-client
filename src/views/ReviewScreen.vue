@@ -95,7 +95,7 @@ const store = useBoothStore()
 const outputCanvas = ref(null)
 const isProcessing = ref(false)
 
-const tunnelBase = 'https://7zxvbfr0-8080.asse.devtunnels.ms';
+const tunnelBase = 'https://find-ray-paste-lightweight.trycloudflare.com';
 
 /** * Menggabungkan Base URL Tunnel dengan Path dari Database.
  * Inilah yang akan di-scan oleh HP user.
