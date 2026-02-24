@@ -1,16 +1,5 @@
 [
   {
-    "id": "wedding-floral-strip",
-    "name": "Wedding Floral (3 Poses)",
-    "thumbnail": "/assets/frames/birthday.png",
-    "frameSrc": "/assets/frames/birthday.png",
-    "slots": [
-      {"x":186,"y":231,"w":822,"h":393},
-      {"x":186,"y":648,"w":819,"h":399},
-      {"x":186,"y":1068,"w":822,"h":246}
-    ]
-  },
-  {
     "id": "blue-jeans",
     "name": "Blue Jeans",
     "thumbnail": "/assets/thumbnails/blue-jeans.jpg",
@@ -32,6 +21,45 @@
     "slots": [
       {"x": 147, "y": 99, "w": 927, "h": 543},
       {"x": 144, "y": 657, "w": 945, "h": 543}
+    ]
+  },
+  {
+    "id": "weeding-2",
+    "name": "Weeding Theme 2",
+    "thumbnail": "/assets/thumbnails/weeding_2.jpg",
+    "frameSrc": "/assets/frames/weeding_2.png",
+    "slots": [
+      { "x": 147, "y": 99, "w": 927, "h": 543 },
+      { "x": 147, "y": 99, "w": 927, "h": 543 },
+      { "x": 144, "y": 657, "w": 945, "h": 543 }
+    ]
+  },
+  {
+    "id": "weeding-3",
+    "name": "Weeding Theme 3",
+    "thumbnail": "/assets/thumbnails/weeding_3.jpg",
+    "frameSrc": "/assets/frames/weeding_3.png",
+    "slots": [
+      { "x": 147, "y": 99, "w": 927, "h": 543 },
+      { "x": 144, "y": 657, "w": 945, "h": 543 },
+      { "x": 144, "y": 657, "w": 945, "h": 543 },
+      { "x": 144, "y": 657, "w": 945, "h": 543 },
+      { "x": 144, "y": 657, "w": 945, "h": 543 },
+      { "x": 144, "y": 657, "w": 945, "h": 543 }
+    ]
+  },
+  {
+    "id": "music-1",
+    "name": "Music Theme 1",
+    "thumbnail": "/assets/thumbnails/music.jpg",
+    "frameSrc": "/assets/frames/music.png",
+    "slots": [
+      { "x": 147, "y": 99, "w": 927, "h": 543 },
+      { "x": 144, "y": 657, "w": 945, "h": 543 },
+      { "x": 144, "y": 657, "w": 945, "h": 543 },
+      { "x": 144, "y": 657, "w": 945, "h": 543 },
+      { "x": 144, "y": 657, "w": 945, "h": 543 },
+      { "x": 144, "y": 657, "w": 945, "h": 543 }
     ]
   }
 ]
