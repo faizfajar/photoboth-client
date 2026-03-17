@@ -74,6 +74,18 @@
       {"x": 633, "y": 678, "w": 528, "h": 321},
       {"x": 633, "y": 1026, "w": 528, "h": 321}
     ]
+  },
+  {
+    "id": "newspaper",
+    "name": "NEWSPAPER",
+    "thumbnail": "/assets/thumbnails/newspaper.jpg",
+    "frameSrc": "/assets/frames/newspaper.png",
+    "slots": [
+      {"x": 30, "y": 438, "w": 528, "h": 528},
+      {"x": 633, "y": 438, "w": 528, "h": 528},
+      {"x": 33, "y": 990, "w": 528, "h": 528},
+      {"x": 633, "y": 990, "w": 528, "h": 528}
+    ]
   }
 ]
 
