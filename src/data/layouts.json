@@ -78,8 +78,8 @@
   {
     "id": "newspaper",
     "name": "NEWSPAPER",
-    "thumbnail": "/assets/thumbnails/newspaper.jpg",
-    "frameSrc": "/assets/frames/newspaper.png",
+    "thumbnail": "/assets/thumbnails/newspaper_1.jpg",
+    "frameSrc": "/assets/frames/newspaper_1.png",
     "slots": [
       {"x": 30, "y": 438, "w": 528, "h": 528},
       {"x": 633, "y": 438, "w": 528, "h": 528},
