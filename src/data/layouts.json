@@ -65,8 +65,8 @@
   {
     "id": "dev-only",
     "name": "DEV ONLY",
-    "thumbnail": "/public/assets/thumbnails/devonly.jpeg",
-    "frameSrc": "/public/assets/frames/devonly.png",
+    "thumbnail": "/assets/thumbnails/devonly.jpeg",
+    "frameSrc": "/assets/frames/devonly.png",
     "slots": [
       {"x": 33, "y": 321, "w": 528, "h": 321},
       {"x": 33, "y": 678, "w": 528, "h": 321},
