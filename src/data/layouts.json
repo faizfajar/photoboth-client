@@ -61,6 +61,19 @@
       { "x": 144, "y": 657, "w": 945, "h": 543 },
       { "x": 144, "y": 657, "w": 945, "h": 543 }
     ]
+  },
+  {
+    "id": "dev-only",
+    "name": "DEV ONLY",
+    "thumbnail": "/public/assets/thumbnails/devonly.jpeg",
+    "frameSrc": "/public/assets/frames/devonly.png",
+    "slots": [
+      {"x": 33, "y": 321, "w": 528, "h": 321},
+      {"x": 33, "y": 678, "w": 528, "h": 321},
+      {"x": 33, "y": 1029, "w": 528, "h": 321},
+      {"x": 633, "y": 678, "w": 528, "h": 321},
+      {"x": 633, "y": 1026, "w": 528, "h": 321}
+    ]
   }
 ]
 
