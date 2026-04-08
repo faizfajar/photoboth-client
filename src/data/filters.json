@@ -1,0 +1,13 @@
+[
+  { "id": 1, "name": "Off", "class": "ft-pic-none" },
+  { "id": 2, "name": "Portrait", "class": "ft-pic-portrait" },
+  { "id": 3, "name": "Viv", "class": "ft-pic-vivid" },
+  { "id": 4, "name": "B&W", "class": "ft-pic-bw" },
+  { "id": 5, "name": "Vintage", "class": "ft-pic-vintage" },
+  { "id": 6, "name": "Cool", "class": "ft-pic-cool" },
+  { "id": 6, "name": "Cool", "class": "ft-pic-cool" },
+  { "id": 6, "name": "Cool", "class": "ft-pic-cool" },
+  { "id": 6, "name": "Cool", "class": "ft-pic-cool" },
+  { "id": 6, "name": "Cool", "class": "ft-pic-cool" },
+  { "id": 6, "name": "Cool", "class": "ft-pic-noir" }
+]

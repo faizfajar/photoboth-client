@@ -1,0 +1,108 @@
+[
+  {
+    "id": 1,
+    "name": "Happy Time",
+    "thumb": "/assets/poses/pose_1.png",
+    "ghostSrc": "/assets/poses/pose_1.png",
+    "isTrending": true
+  },
+  {
+    "id": 2,
+    "name": "",
+    "thumb": "/assets/poses/pose_2.png",
+    "ghostSrc": "/assets/poses/pose_2.png",
+    "isTrending": false
+  },
+  {
+    "id": 3,
+    "name": "Cat Ears",
+    "thumb": "/assets/poses/pose_3.png",
+    "ghostSrc": "/assets/poses/pose_3.png",
+    "isTrending": true
+  },
+  {
+    "id": 4,
+    "name": "0.5 Wide",
+    "thumb": "/assets/poses/pose_4.png",
+    "ghostSrc": "/assets/poses/pose_4.png",
+    "isTrending": false
+  },
+  {
+    "id": 5,
+    "name": "Wink Peace",
+    "thumb": "/assets/poses/pose_5.png",
+    "ghostSrc": "/assets/poses/pose_5.png",
+    "isTrending": false
+  },
+  {
+    "id": 6,
+    "name": "Shy Face",
+    "thumb": "/assets/poses/pose_6.png",
+    "ghostSrc": "/assets/poses/pose_6.png",
+    "isTrending": false
+  },
+  {
+    "id": 7,
+    "name": "Wink Peace",
+    "thumb": "/assets/poses/pose_7.png",
+    "ghostSrc": "/assets/poses/pose_7.png",
+    "isTrending": false
+  },
+{
+    "id": 8,
+    "name": "Wink Peace",
+    "thumb": "/assets/poses/pose_8.png",
+    "ghostSrc": "/assets/poses/pose_8.png",
+    "isTrending": false
+  },
+{
+    "id": 9,
+    "name": "Wink Peace",
+    "thumb": "/assets/poses/pose_9.png",
+    "ghostSrc": "/assets/poses/pose_9.png",
+    "isTrending": false
+  },
+{
+    "id": 10,
+    "name": "Wink Peace",
+    "thumb": "/assets/poses/pose_10.png",
+    "ghostSrc": "/assets/poses/pose_10.png",
+    "isTrending": false
+  },
+{
+    "id": 5,
+    "name": "Wink Peace",
+    "thumb": "/assets/poses/pose_11.png",
+    "ghostSrc": "/assets/poses/pose_11.png",
+    "isTrending": false
+  },
+{
+    "id": 5,
+    "name": "Wink Peace",
+    "thumb": "/assets/poses/pose_12.png",
+    "ghostSrc": "/assets/poses/pose_12.png",
+    "isTrending": false
+  },
+{
+    "id": 5,
+    "name": "Wink Peace",
+    "thumb": "/assets/poses/pose_13.png",
+    "ghostSrc": "/assets/poses/pose_13.png",
+    "isTrending": false
+  },
+{
+    "id": 5,
+    "name": "Wink Peace",
+    "thumb": "/assets/poses/pose_14.png",
+    "ghostSrc": "/assets/poses/pose_14.png",
+    "isTrending": false
+  },
+{
+    "id": 5,
+    "name": "Wink Peace",
+    "thumb": "/assets/poses/pose_15.png",
+    "ghostSrc": "/assets/poses/pose_15.png",
+    "isTrending": false
+  }
+
+]
